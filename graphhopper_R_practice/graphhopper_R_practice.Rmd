@@ -44,18 +44,23 @@ paste(round(results$paths$time/60000, 2), "min")
 ```
 
 Public transit practice for around Berlin.......appears to work!!!!!!!
+Let me see if I can add the limit routes parameter to speed it up. 
 
 ```{r}
-results  <- GET("http://localhost:8989/route?point=52.52583%2C13.388214&point=52.512356%2C13.384695&pt.earliest_departure_time=2018-08-30T15%3A40%3A00.000Z") %>% content("text") %>% fromJSON()
+results  <- GET("http://localhost:8989/route?point=52.52583%2C13.388214&point=52.512356%2C13.384695&pt.earliest_departure_time=2018-08-30T15%3A40%3A00.000Z&pt.limit_solutions=1") %>% content("text", encoding = "UTF-8") %>% fromJSON()
 paste(round(results$paths$distance/1000,2), "km")
 paste(round(results$paths$time/60000, 2), "min")
 ```
 
 Now do a stress test for transit. 
 ```{r}
-benchmark({GET("http://localhost:8989/route?point=52.52583%2C13.388214&point=52.512356%2C13.384695&pt.earliest_departure_time=2018-08-30T15%3A40%3A00.000Z&") %>% content("text") %>% fromJSON()}, replications = 10000);
+# Limited to one route
+benchmark({GET("http://localhost:8989/route?point=52.52583%2C13.388214&point=52.512356%2C13.384695&pt.earliest_departure_time=2018-08-30T15%3A40%3A00.000Z&pt.limit_solutions=1") %>% content("text", encoding = "UTF-8") %>% fromJSON()}, replications = 100)
+# No route limit
+benchmark({GET("http://localhost:8989/route?point=52.52583%2C13.388214&point=52.512356%2C13.384695&pt.earliest_departure_time=2018-08-30T15%3A40%3A00.000Z") %>% content("text", encoding = "UTF-8") %>% fromJSON()}, replications = 100)
 ```
 
+This was with default number of solutions which is 5 I believe. It was even slower which is weird. So it appears that limiting routes actually takes almost twice as long. 
 843.68/10000 = 0.084368s/request 
 A bit slower than other modes at just under 12 requests per second. 
 Still, it's free though so that's hard to complain. 
@@ -87,3 +92,23 @@ benchmark({GET("http://localhost:8989/route?point=38.008066%2C-122.115784&point=
 ```
 135.26/10000 = 0.013526s/request
 About 74 requests per second. Slower but still not to bad I think. 
+
+
+Now do transit routing for Stockton. 
+```{r}
+# Limited to one route
+benchmark({GET("http://localhost:8989/route?point=37.955297%2C-121.310906&point=37.951473%2C-121.262541&pt.earliest_departure_time=2018-08-30T15%3A40%3A00.000Z&pt.limit_solutions=1") %>% content("text", encoding = "UTF-8") %>% fromJSON()}, replications = 10000)
+# No route limit
+benchmark({GET("http://localhost:8989/route?point=37.955297%2C-121.310906&point=37.951473%2C-121.262541&pt.earliest_departure_time=2018-08-30T15%3A40%3A00.000Z") %>% content("text", encoding = "UTF-8") %>% fromJSON()}, replications = 10000)
+```
+
+Interesting how limiting routes is actually marginally faster for Stockton. 
+10000/302.13 = 33 requests per second for 1 route. 
+10000/318.99 = 31 requests per second for no route limits. 
+
+
+```{r}
+results  <- GET("http://localhost:8989/route?point=37.955297%2C-121.310906&point=37.951473%2C-121.262541&pt.earliest_departure_time=2018-08-30T15%3A40%3A00.000Z&pt.limit_solutions=1") %>% content("text", encoding = "UTF-8") %>% fromJSON()
+paste(round(results$paths$distance/1000,2), "km")
+paste(round(results$paths$time/60000, 2), "min")
+```
