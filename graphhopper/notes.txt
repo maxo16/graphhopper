@@ -1,2 +1,0 @@
-Use this when running in the babun shell. 
-./run.bat 

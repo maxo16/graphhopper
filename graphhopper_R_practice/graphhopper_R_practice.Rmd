@@ -1,0 +1,89 @@
+---
+title: "Graphhopper Practice"
+author: "Max O'Krepki"
+date: "August 17, 2018"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+setwd("C:\\Users\\Derek\\Documents\\GitHub\\graphhopper\\graphhopper_R_practice")
+```
+
+Libraries 
+```{r}
+library(httr)
+library(jsonlite)
+library(rbenchmark)
+library(dplyr)
+```
+
+
+This all works for Berlin, down below I'll try the Bay Area. 
+
+
+Making a sample request to the local instance of graphhopper 
+```{r}
+benchmark({
+response <- GET("http://localhost:8989/route?point=52.52583%2C13.388214&point=52.512356%2C13.384695")
+results  <- fromJSON(content(response, 'text'))}
+replications = 1)
+```
+
+Returned distance is in meters and time in ms (1 min = 60,000 ms)
+```{r}
+results  <- GET("http://localhost:8989/route?point=52.52583%2C13.388214&point=52.512356%2C13.384695") %>% content("text") %>% fromJSON()
+paste(round(results$paths$distance/1000,2), "km")
+paste(round(results$paths$time/60000, 2), "min")
+```
+
+Public transit practice for around Berlin.......appears to work!!!!!!!
+
+```{r}
+results  <- GET("http://localhost:8989/route?point=52.52583%2C13.388214&point=52.512356%2C13.384695&pt.earliest_departure_time=2018-08-30T15%3A40%3A00.000Z") %>% content("text") %>% fromJSON()
+paste(round(results$paths$distance/1000,2), "km")
+paste(round(results$paths$time/60000, 2), "min")
+```
+
+Now do a stress test for transit. 
+```{r}
+benchmark({GET("http://localhost:8989/route?point=52.52583%2C13.388214&point=52.512356%2C13.384695&pt.earliest_departure_time=2018-08-30T15%3A40%3A00.000Z&") %>% content("text") %>% fromJSON()}, replications = 10000);
+```
+
+843.68/10000 = 0.084368s/request 
+A bit slower than other modes at just under 12 requests per second. 
+Still, it's free though so that's hard to complain. 
+
+
+Practice with bike, and foot. Voila! They both work. Now the momen we've all been waiting for, the California test.....ding ding ding ding ding! It works!
+```{r}
+results  <- GET("http://localhost:8989/route?point=38.008066%2C-122.115784&point=37.425798%2C-122.169685&vehicle=car") %>% content("text") %>% fromJSON()
+paste(round(results$paths$distance/1000,2), "km")
+paste(round(results$paths$time/60000, 2), "min")
+```
+
+```{r}
+benchmark({GET("http://localhost:8989/route?point=52.52583%2C13.388214&point=52.512356%2C13.384695") %>% content("text") %>% fromJSON()}, replications = 10000)
+```
+
+66.78/10000 = 0.006678s/request
+Pretty fast about 149 requests per second
+
+Total requests
+2700*197*4
+Estimated total time in hours ~4
+2700*197*4*0.006678/3600
+
+
+Do a quick test with the california file. Note that is uses a different storage option. 
+```{r}
+benchmark({GET("http://localhost:8989/route?point=38.008066%2C-122.115784&point=37.425798%2C-122.169685&vehicle=car") %>% content("text") %>% fromJSON()}, replications = 10000)
+```
+135.26/10000 = 0.013526s/request
+About 74 requests per second. Slower but still not to bad I think. 
