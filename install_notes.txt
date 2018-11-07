@@ -1,0 +1,11 @@
+Make sure you have the java sdk installed. 
+
+Have to make sure your machine understands java path variable. 
+https://javatutorial.net/set-java-home-windows-10
+
+Seems I have to add it to user variables as well
+
+Follow commands here once Java is set and Git is installed 
+https://github.com/graphhopper/graphhopper/blob/master/reader-gtfs/README.md#quick-start
+
+Seems like it's installed. Check with files on other machine and get it to run here. 
