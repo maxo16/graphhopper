@@ -3,9 +3,29 @@ Make sure you have the java sdk installed.
 Have to make sure your machine understands java path variable. 
 https://javatutorial.net/set-java-home-windows-10
 
-Seems I have to add it to user variables as well
+Seems I have to add it to user variables as well.
+
 
 Follow commands here once Java is set and Git is installed 
 https://github.com/graphhopper/graphhopper/blob/master/reader-gtfs/README.md#quick-start
 
-Seems like it's installed. Check with files on other machine and get it to run here. 
+
+Make sure that there's a gtfs file in the same folder as graphhopper and a ".osm" file. 
+input_map.osm  - can be downloaded using the overpass API
+input_gtfs.zip - transitfeeds.com makes this pretty easy
+
+
+After you've cloned the graphhopper repo and added the inputs, add the "run.bat" and "run_pt.bat" 
+files into the graphhopper folder. 
+
+Clicking on run.bat should run graphhopper for car,bike,foot
+Make sure the encoding (around line 11) in this file "input_config.yml" is "car,foot,bike"
+
+
+Clickingi on run_pt.bat should run graphhopper for public transit. 
+Make sure the encoding (around line 11) in this file "input_config_pt.yml" is "pt"
+
+
+*Note that in each of the batch files, you may have to play with the amount of RAM allocated 
+to the JVM. If running graphhopper over small areas, you shouldn't need much at all. However, 
+if the application seems slow at start up, it's likely because not enough RAM was allocated to the JVM. 
