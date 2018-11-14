@@ -3,26 +3,29 @@ Make sure you have the java sdk installed.
 Have to make sure your machine understands java path variable. 
 https://javatutorial.net/set-java-home-windows-10
 
-Seems I have to add it to user variables as well.
+May have to add user variable, that's how I had to get it to work. 
 
 
+I've been used Git to clone the repo from GitHub but you could probably just 
+manually download. 
 Follow commands here once Java is set and Git is installed 
 https://github.com/graphhopper/graphhopper/blob/master/reader-gtfs/README.md#quick-start
 
 
-Make sure that there's a gtfs file in the same folder as graphhopper and a ".osm" file. 
+Make sure that there's a gtfs file in the same folder as graphhopper and a ".osm" file. I usually get them here: https://transitfeeds.com/ 
 input_map.osm  - can be downloaded using the overpass API
 input_gtfs.zip - transitfeeds.com makes this pretty easy
 
 
-After you've cloned the graphhopper repo and added the inputs, add the "run.bat" and "run_pt.bat" 
-files into the graphhopper folder. 
+After you've cloned the graphhopper repo and added the inputs, add the "run.bat" and "run_pt.bat" files into the graphhopper folder. The bat files have to be in the same 
+directory as the graphhopper. It may be helpful to add the timeout function, 
+can help with debugging. 
 
 Clicking on run.bat should run graphhopper for car,bike,foot
 Make sure the encoding (around line 11) in this file "input_config.yml" is "car,foot,bike"
 
 
-Clickingi on run_pt.bat should run graphhopper for public transit. 
+Clicking on run_pt.bat should run graphhopper for public transit. 
 Make sure the encoding (around line 11) in this file "input_config_pt.yml" is "pt"
 
 
